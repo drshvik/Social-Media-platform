@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Profile Page</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      .hidden {
+        display: none;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-100">
+    <!-- Sidebar -->
+    <div class="bg-white flex w-full">
+      <div
+        class="w-1/5 fixed bg-white h-screen shadow-md p-6 flex flex-col justify-between"
+      >
+        <div>
+          <h1 class="text-2xl font-bold mb-6">SocialApp</h1>
+          <nav>
+            <ul class="space-y-4">
+              <li>
+                <a href="#" class="text-gray-700 hover:text-blue-500">Home</a>
+              </li>
+              <li>
+                <a href="#" class="text-gray-700 hover:text-blue-500">Search</a>
+              </li>
+              <li>
+                <a href="#" class="text-gray-700 hover:text-blue-500"
+                  >Explore</a
+                >
+              </li>
+              <li>
+                <a href="#" class="text-gray-700 hover:text-blue-500"
+                  >My Profile</a
+                >
+              </li>
+            </ul>
+          </nav>
+        </div>
+        <div>
+          <a href="#" class="text-gray-700 hover:text-blue-500">Settings</a>
+        </div>
+      </div>
+
+      <!-- Main content -->
+      <div class="flex-1 ml-96 mr-96 w-40 p-6">
+        <div class="container mx-auto py-10">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center">
+              <img
+                class="w-32 h-32 rounded-2xl"
+                src="/images/1.jpeg"
+                alt="Profile Picture"
+              />
+              <div class="ml-6">
+                <h2 class="text-3xl font-bold">Jenny Wilson</h2>
+                <p class="text-gray-500">@Jenny</p>
+              </div>
+            </div>
+            <button
+              class="bg-green-500 text-white px-4 py-2 rounded-full hover:bg-green-600"
+            >
+              Follow
+            </button>
+          </div>
+          <div class="flex justify-evenly mt-8">
+            <div class="text-center">
+              <h3 class="text-xl font-bold">32</h3>
+              <p class="text-gray-500">Posts</p>
+            </div>
+            <div class="text-center">
+              <h3 class="text-xl font-bold">1.6K</h3>
+              <p class="text-gray-500">Followers</p>
+            </div>
+            <div class="text-center">
+              <h3 class="text-xl font-bold">382</h3>
+              <p class="text-gray-500">Following</p>
+            </div>
+          </div>
+          <div class="mt-8">
+            <div class="flex justify-evenly space-x-8 border-b-2 pb-2">
+              <button
+                id="posts-btn"
+                class="text-gray-800 font-semibold border-b-4 border-green-500"
+              >
+                Posts
+              </button>
+              <button
+                id="followers-btn"
+                class="text-gray-500 hover:text-gray-800"
+              >
+                Followers
+              </button>
+              <button
+                id="following-btn"
+                class="text-gray-500 hover:text-gray-800"
+              >
+                Following
+              </button>
+            </div>
+            <div class="mt-8">
+              <div id="posts" class="grid grid-cols-3 gap-4">
+                <a href="#">
+                  <img
+                    src="/images/3.jpeg"
+                    alt="Post Image"
+                    class="w-full h-96 object-cover rounded-lg"
+                  />
+                </a>
+                <a href="#">
+                  <img
+                    src="/images/5.jpeg"
+                    alt="Post Image"
+                    class="w-full h-96 object-cover rounded-lg"
+                  />
+                </a>
+                <a href="#">
+                  <img
+                    src="/images/3.jpeg"
+                    alt="Post Image"
+                    class="w-full h-96 object-cover rounded-lg"
+                  />
+                </a>
+                <a href="#">
+                  <img
+                    src="/images/5.jpeg"
+                    alt="Post Image"
+                    class="w-full h-96 object-cover rounded-lg"
+                  />
+                </a>
+                <a href="#">
+                  <img
+                    src="/images/3.jpeg"
+                    alt="Post Image"
+                    class="w-full h-96 object-cover rounded-lg"
+                  />
+                </a>
+                <a href="#">
+                  <img
+                    src="/images/5.jpeg"
+                    alt="Post Image"
+                    class="w-full h-96 object-cover rounded-lg"
+                  />
+                </a>
+              </div>
+              <!-- Add more images as needed -->
+            </div>
+            <div id="followers" class="hidden mt-8">
+              <ul class="space-y-4">
+                <li
+                  class="flex items-center justify-between bg-white p-4 rounded-lg shadow"
+                >
+                  <div class="flex items-center">
+                    <img
+                      class="w-16 h-16 rounded-full"
+                      src="/images/1.jpeg"
+                      alt="Follower Profile Picture"
+                    />
+                    <div class="ml-4">
+                      <h3 class="text-lg font-semibold">Follower Name</h3>
+                      <p class="text-gray-500">@followerusername</p>
+                    </div>
+                  </div>
+                  <button
+                    class="bg-red-500 text-white px-4 py-2 rounded-full hover:bg-red-600"
+                  >
+                    Remove Follower
+                  </button>
+                </li>
+
+                <li
+                  class="flex items-center justify-between bg-white p-4 rounded-lg shadow"
+                >
+                  <div class="flex items-center">
+                    <img
+                      class="w-16 h-16 rounded-full"
+                      src="/images/2.jpeg"
+                      alt="Follower Profile Picture"
+                    />
+                    <div class="ml-4">
+                      <h3 class="text-lg font-semibold">Follower Name</h3>
+                      <p class="text-gray-500">@followerusername</p>
+                    </div>
+                  </div>
+                  <button
+                    class="bg-red-500 text-white px-4 py-2 rounded-full hover:bg-red-600"
+                  >
+                    Remove Follower
+                  </button>
+                </li>
+                <li
+                  class="flex items-center justify-between bg-white p-4 rounded-lg shadow"
+                >
+                  <div class="flex items-center">
+                    <img
+                      class="w-16 h-16 rounded-full"
+                      src="/images/3.jpeg"
+                      alt="Follower Profile Picture"
+                    />
+                    <div class="ml-4">
+                      <h3 class="text-lg font-semibold">Follower Name</h3>
+                      <p class="text-gray-500">@followerusername</p>
+                    </div>
+                  </div>
+                  <button
+                    class="bg-red-500 text-white px-4 py-2 rounded-full hover:bg-red-600"
+                  >
+                    Remove Follower
+                  </button>
+                </li>
+              </ul>
+            </div>
+            <div id="following" class="hidden mt-8">
+              <ul class="space-y-4">
+                <!-- Following 1 -->
+                <li
+                  class="flex items-center justify-between bg-white p-4 rounded-lg shadow"
+                >
+                  <div class="flex items-center">
+                    <img
+                      class="w-16 h-16 rounded-full"
+                      src="/images/1.jpeg"
+                      alt="Following Profile Picture"
+                    />
+                    <div class="ml-4">
+                      <h3 class="text-lg font-semibold">Following Name</h3>
+                      <p class="text-gray-500">@followingusername</p>
+                    </div>
+                  </div>
+                  <button
+                    class="bg-red-500 text-white px-4 py-2 rounded-full hover:bg-red-600"
+                  >
+                    Unfollow
+                  </button>
+                </li>
+                <!-- Add more followings as needed -->
+                <li
+                  class="flex items-center justify-between bg-white p-4 rounded-lg shadow"
+                >
+                  <div class="flex items-center">
+                    <img
+                      class="w-16 h-16 rounded-full"
+                      src="/images/2.jpeg"
+                      alt="Following Profile Picture"
+                    />
+                    <div class="ml-4">
+                      <h3 class="text-lg font-semibold">Following Name</h3>
+                      <p class="text-gray-500">@followingusername</p>
+                    </div>
+                  </div>
+                  <button
+                    class="bg-red-500 text-white px-4 py-2 rounded-full hover:bg-red-600"
+                  >
+                    Unfollow
+                  </button>
+                </li>
+                <li
+                  class="flex items-center justify-between bg-white p-4 rounded-lg shadow"
+                >
+                  <div class="flex items-center">
+                    <img
+                      class="w-16 h-16 rounded-full"
+                      src="/images/3.jpeg"
+                      alt="Following Profile Picture"
+                    />
+                    <div class="ml-4">
+                      <h3 class="text-lg font-semibold">Following Name</h3>
+                      <p class="text-gray-500">@followingusername</p>
+                    </div>
+                  </div>
+                  <button
+                    class="bg-red-500 text-white px-4 py-2 rounded-full hover:bg-red-600"
+                  >
+                    Unfollow
+                  </button>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      document
+        .getElementById("posts-btn")
+        .addEventListener("click", function () {
+          document.getElementById("posts").classList.remove("hidden");
+          document.getElementById("followers").classList.add("hidden");
+          document.getElementById("following").classList.add("hidden");
+
+          document
+            .getElementById("posts-btn")
+            .classList.add(
+              "text-gray-800",
+              "font-semibold",
+              "border-b-4",
+              "border-green-500"
+            );
+          document
+            .getElementById("followers-btn")
+            .classList.remove(
+              "text-gray-800",
+              "font-semibold",
+              "border-b-4",
+              "border-green-500"
+            );
+          document
+            .getElementById("following-btn")
+            .classList.remove(
+              "text-gray-800",
+              "font-semibold",
+              "border-b-4",
+              "border-green-500"
+            );
+        });
+
+      document
+        .getElementById("followers-btn")
+        .addEventListener("click", function () {
+          document.getElementById("posts").classList.add("hidden");
+          document.getElementById("followers").classList.remove("hidden");
+          document.getElementById("following").classList.add("hidden");
+
+          document
+            .getElementById("posts-btn")
+            .classList.remove(
+              "text-gray-800",
+              "font-semibold",
+              "border-b-4",
+              "border-green-500"
+            );
+          document
+            .getElementById("followers-btn")
+            .classList.add(
+              "text-gray-800",
+              "font-semibold",
+              "border-b-4",
+              "border-green-500"
+            );
+          document
+            .getElementById("following-btn")
+            .classList.remove(
+              "text-gray-800",
+              "font-semibold",
+              "border-b-4",
+              "border-green-500"
+            );
+        });
+
+      document
+        .getElementById("following-btn")
+        .addEventListener("click", function () {
+          document.getElementById("posts").classList.add("hidden");
+          document.getElementById("followers").classList.add("hidden");
+          document.getElementById("following").classList.remove("hidden");
+
+          document
+            .getElementById("posts-btn")
+            .classList.remove(
+              "text-gray-800",
+              "font-semibold",
+              "border-b-4",
+              "border-green-500"
+            );
+          document
+            .getElementById("followers-btn")
+            .classList.remove(
+              "text-gray-800",
+              "font-semibold",
+              "border-b-4",
+              "border-green-500"
+            );
+          document
+            .getElementById("following-btn")
+            .classList.add(
+              "text-gray-800",
+              "font-semibold",
+              "border-b-4",
+              "border-green-500"
+            );
+        });
+    </script>
+  </body>
+</html>

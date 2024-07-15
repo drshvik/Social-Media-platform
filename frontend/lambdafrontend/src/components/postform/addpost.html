@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Add Post</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <script
+      src="https://kit.fontawesome.com/a076d05399.js"
+      crossorigin="anonymous"
+    ></script>
+  </head>
+  <body class="bg-gray-100">
+    <div class="bg-white flex w-full">
+      <!-- Sidebar -->
+      <div
+        class="w-1/5 fixed bg-white h-screen shadow-md p-6 flex flex-col justify-between"
+      >
+        <div>
+          <h1 class="text-2xl font-bold mb-6">SocialApp</h1>
+          <nav>
+            <ul class="space-y-4">
+              <li>
+                <a
+                  href="#"
+                  class="text-gray-700 hover:text-blue-500 flex items-center"
+                >
+                  <i class="fas fa-home mr-2"></i> Home
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#"
+                  class="text-gray-700 hover:text-blue-500 flex items-center"
+                >
+                  <i class="fas fa-search mr-2"></i> Search
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#"
+                  class="text-gray-700 hover:text-blue-500 flex items-center"
+                >
+                  <i class="fas fa-compass mr-2"></i> Explore
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#"
+                  class="text-gray-700 hover:text-blue-500 flex items-center"
+                >
+                  <i class="fas fa-user mr-2"></i> My Profile
+                </a>
+              </li>
+            </ul>
+          </nav>
+        </div>
+        <div>
+          <a
+            href="#"
+            class="text-gray-700 hover:text-blue-500 flex items-center"
+          >
+            <i class="fas fa-cog mr-2"></i> Settings
+          </a>
+        </div>
+      </div>
+      <!-- Main content -->
+      <div class="flex-1 ml-96 mr-96 w-40 p-6">
+        <div class="container mx-auto py-10">
+          <div class="flex justify-start mb-4">
+            <button
+              type="button"
+              onclick="openModal()"
+              class="underline text-red-500 hover:text-red-600 focus:outline-none focus:shadow-outline"
+            >
+              Back
+            </button>
+          </div>
+          <h2 class="text-3xl font-bold mb-6">Add New Post</h2>
+          <form action="#" method="POST" enctype="multipart/form-data">
+            <div class="mb-4">
+              <label for="postImage" class="block text-gray-700 font-bold mb-2"
+                >Image</label
+              >
+              <input
+                type="file"
+                id="postImage"
+                name="postImage"
+                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              />
+            </div>
+            <div class="mb-4">
+              <label
+                for="postContent"
+                class="block text-gray-700 font-bold mb-2"
+                >Caption</label
+              >
+              <input
+                id="caption"
+                name="caption"
+                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                placeholder="Post content"
+              />
+            </div>
+            <div class="flex items-center justify-between">
+              <button
+                type="button"
+                onclick="openModal()"
+                class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+              >
+                Post
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <!-- Modal -->
+    <div
+      id="modal"
+      class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden"
+    >
+      <div
+        class="relative top-1/4 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white"
+      >
+        <div class="mt-3 text-center">
+          <h3 class="text-lg leading-6 font-medium text-gray-900">
+            Cancel Add Post
+          </h3>
+          <div class="mt-2 px-7 py-3">
+            <p class="text-sm text-gray-500">
+              Are you sure you want to cancel?
+            </p>
+          </div>
+          <div class="items-center px-4 py-3">
+            <button
+              onclick="closeModal()"
+              class="px-4 py-2 bg-gray-500 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-300"
+            >
+              No
+            </button>
+            <button
+              onclick="cancelPost()"
+              class="mt-2 px-4 py-2 bg-red-500 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-300"
+            >
+              Yes
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      function openModal() {
+        document.getElementById("modal").classList.remove("hidden");
+      }
+
+      function closeModal() {
+        document.getElementById("modal").classList.add("hidden");
+      }
+
+      function cancelPost() {
+        // Redirect to another page or handle the cancel action
+        window.location.href = "/"; // Replace '/' with the desired URL
+      }
+    </script>
+  </body>
+</html>
