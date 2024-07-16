@@ -9,6 +9,7 @@ export const getToken = () => {
 
 // Function to set the token in local storage
 export const setToken = (token) => {
+  console.log("I am getting token as" + token);
   localStorage.setItem(TOKEN_KEY, token);
 };
 

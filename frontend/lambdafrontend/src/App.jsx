@@ -5,7 +5,7 @@ import { Signup } from "./components/signup/Signup";
 import { Profile } from "./components/Profile/Profile";
 import { SinglePost } from "./components/singlePost/SinglePost";
 import { AddPost } from "./components/postform/AddPost";
-import { EditProfile } from "./components/profileform/EditProfile";
+import { ProfileForm } from "./components/profileform/ProfileForm";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute";
 
@@ -33,6 +33,10 @@ const router = createBrowserRouter([
   {
     path: "/addpost",
     element: <ProtectedRoute component={AddPost} />,
+  },
+  {
+    path: "/editprofile",
+    element: <ProtectedRoute component={ProfileForm} />,
   },
 ]);
 

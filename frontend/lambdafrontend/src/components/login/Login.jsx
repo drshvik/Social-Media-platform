@@ -1,5 +1,5 @@
 import { useState } from "react";
-import api from "../../../axiosConfig";
+import axios from "axios";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { setToken } from "../../../tokenUtils";
@@ -15,16 +15,20 @@ export function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const url = "http://localhost:3000/login";
-    const response = await api.post(url, input);
-    console.log(response);
-    if (response.data.success) {
-      const token = response.data.token;
-      setToken("token", token);
-      navigate("/posts");
-    } else {
-      console.log(false);
-      setError(true);
-      setInput({ ...input, password: "" });
+    try {
+      const response = await axios.post(url, input);
+
+      if (response.data.success) {
+        const str = response.data["token"];
+        console.log("Backedn sent the token as " + str);
+        setToken(str);
+        navigate("/posts");
+      } else {
+        setError(true);
+        setInput({ ...input, password: "" });
+      }
+    } catch (e) {
+      console.log(e);
     }
   };
   return (

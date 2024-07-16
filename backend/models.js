@@ -1,9 +1,12 @@
+require("dotenv").config();
 const mongoose = require("mongoose");
+
+const uri = process.env.MONGODB_URI;
+
 mongoose
-  .connect(
-    "mongodb+srv://admin:admin%40123@study.rfws1gk.mongodb.net/socialapp"
-  )
-  .then(() => console.log("connected to mongo db"));
+  .connect(uri)
+  .then(() => console.log("connected to mongo db"))
+  .catch((err) => console.error("Error connecting to MongoDB", err));
 
 const userSchema = new mongoose.Schema({
   name: String,

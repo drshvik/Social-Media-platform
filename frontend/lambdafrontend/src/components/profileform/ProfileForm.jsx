@@ -1,7 +1,31 @@
 import { Sidebar } from "../sidebar/Sidebar";
-import img1 from "./../../assets/images/1.jpeg";
+import { useEffect, useState } from "react";
+import api from "../../../axiosConfig";
+import placeholderImage from "./../../assets/images/userplaceholder.jpeg";
 
-export function EditProfile() {
+export function ProfileForm() {
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [input, setInput] = useState({
+    username: "",
+    name: "",
+    image: { placeholderImage },
+  });
+
+  useEffect(() => {
+    async function getCurrentUser() {
+      const url = "/myprofile";
+      try {
+        const res = await api.get(url);
+        const user = res.data;
+        setInput({
+          ...user,
+        });
+      } catch (e) {
+        console.log(e);
+      }
+    }
+    getCurrentUser();
+  }, []);
   function uploadImg() {
     const image = document.getElementById("profileImage");
     image.click();
@@ -21,6 +45,48 @@ export function EditProfile() {
   function cancelCancellation() {
     document.getElementById("cancelModal").classList.add("hidden");
   }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    console.log(input);
+    const formData = new FormData();
+    formData.append("username", input.username);
+    formData.append("name", input.name);
+    formData.append("image", input.image);
+
+    try {
+      const res = await api.put("/editprofile", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setInput({
+          ...input,
+          image: file,
+        });
+        setSelectedImage(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleChange = (e) => {
+    setInput({
+      ...input,
+      [e.target.name]: e.target.value,
+    });
+  };
+
   return (
     <div>
       <Sidebar />
@@ -37,29 +103,29 @@ export function EditProfile() {
             </button>
           </div>
           <h2 className="text-3xl font-bold mb-6">Edit Profile</h2>
-          <form action="#" method="POST" encType="multipart/form-data">
+          <form onSubmit={handleSubmit} encType="multipart/form-data">
             <div className="mb-4 flex flex-col items-center">
               <label
                 htmlFor="profileImage"
                 className="cursor-pointer relative w-36 h-36"
               >
                 <img
-                  src={img1}
+                  src={selectedImage || input.image}
                   alt="Current Profile Picture"
                   className="w-full h-full rounded-full"
                 />
-                <button onClick={uploadImg}>
+                <button type="button" onClick={uploadImg}>
                   <i
                     className="fas fa-edit text-gray-700 absolute bottom-2 right-2 bg-white rounded-full p-2 cursor-pointer"
                     id="editIcon"
                   ></i>
                 </button>
-
                 <input
                   type="file"
                   id="profileImage"
                   name="profileImage"
                   className="hidden"
+                  onChange={handleImageChange}
                 />
               </label>
             </div>
@@ -74,6 +140,8 @@ export function EditProfile() {
                 type="text"
                 id="username"
                 name="username"
+                value={input.username}
+                onChange={handleChange}
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 placeholder="Username"
               />
@@ -89,6 +157,8 @@ export function EditProfile() {
                 type="text"
                 id="name"
                 name="name"
+                value={input.name}
+                onChange={handleChange}
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 placeholder="Name"
               />
@@ -119,7 +189,7 @@ export function EditProfile() {
         <div className="relative top-1/4 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
           <div className="mt-3 text-center">
             <h3 className="text-lg leading-6 font-medium text-gray-900">
-              Cancel Add Post
+              Cancel Edit Profile
             </h3>
             <div className="mt-2 px-7 py-3">
               <p className="text-sm text-gray-500">

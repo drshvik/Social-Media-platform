@@ -1,12 +1,17 @@
 const models = require("./models");
 const zod = require("zod");
 const jwt = require("jsonwebtoken");
-const key = "lambda";
+const multer = require("multer");
+require("dotenv").config();
+const key = process.env.JWT_SECRET;
 const User = models.User;
 const Post = models.Post;
 const Comment = models.Comment;
 const Like = models.Like;
 const { ObjectId } = require("mongodb");
+const FileReader = require("filereader");
+const fs = require("fs");
+const path = require("path");
 
 exports.signup = async (req, res) => {
   const validUser = zod.object({
@@ -27,7 +32,7 @@ exports.signup = async (req, res) => {
   } else {
     User.create({
       ...req.body,
-      image: "",
+      image: "./uploads/userplaceholder.jpeg",
       followers: [],
       following: [],
       posts: [],
@@ -59,13 +64,6 @@ exports.login = async (req, res) => {
   }
   const token = jwt.sign({ username }, key);
   res.json({ token, success: true });
-};
-
-exports.logout = (req, res) => {
-  console.log(req.headers);
-  req.headers = { ...req.headers, authorization: "" };
-  console.log(req.headers);
-  res.send("You are logged out Successfully");
 };
 
 exports.posts = async (req, res) => {
@@ -107,11 +105,24 @@ exports.myprofile = async (req, res) => {
     res.status(404).send("User not found");
     return;
   }
-  res.json(user);
+  const imagePath = path.resolve(user.image);
+  console.log(imagePath);
+
+  fs.readFile(imagePath, (err, data) => {
+    if (err) {
+      return res.status(500).send("Error reading image");
+    }
+
+    const base64Image = Buffer.from(data).toString("base64");
+    const dataURL = `data:image/jpeg;base64,${base64Image}`;
+    user.image = dataURL;
+    res.json(user);
+  });
 };
 
 exports.editprofile = async (req, res) => {
   const username = jwt.decode(req.headers.authorization.split(" ")[1]).username;
+  console.log(req.body);
   const updates = req.body;
   const user = await User.findOneAndUpdate({ username }, updates, {
     new: true,
@@ -195,18 +206,6 @@ exports.like = async (req, res) => {
   res.send("Liked successfully");
 };
 
-// exports.share = async (req, res) => {
-//   const id = req.params.id;
-//   const username = jwt.decode(req.headers.authorization.split(" ")[1]).username;
-//   const user = await User.findOne({ username });
-//   const post = await Post.findById(id);
-//   if (!user || !post) {
-//     res.status(404).send("Post or User not found");
-//     return;
-//   }
-//   res.send("Post shared successfully");
-// };
-
 exports.comment = async (req, res) => {
   const validComment = zod.object({
     content: zod.string(),
@@ -237,30 +236,40 @@ exports.comment = async (req, res) => {
 };
 
 exports.addPost = async (req, res) => {
-  const validPost = zod.object({
-    caption: zod.string(),
-    image: zod.string(),
-  });
-  const postValidation = validPost.safeParse(req.body);
-  if (!postValidation.success) {
-    res.send("Invalid Postgvhjgvhb Data");
-    return;
+  console.log(req);
+  try {
+    const validPost = zod.object({
+      caption: zod.string(),
+    });
+    const postValidation = validPost.safeParse(req.body);
+    if (!postValidation.success) {
+      return res.status(400).send("Invalid Post Data");
+    }
+
+    const imagePath = req.file ? req.file.path : "uploadspostplaceholder.jpeg";
+    const username = jwt.decode(
+      req.headers.authorization.split(" ")[1]
+    ).username;
+    const user = await User.findOne({ username });
+
+    if (!user) {
+      return res.status(404).send("User not found");
+    }
+
+    const newPost = new Post({
+      caption: req.body.caption,
+      image: imagePath,
+      createdBy: user._id,
+    });
+
+    await newPost.save();
+    user.posts.push(newPost._id);
+    await user.save();
+    res.status(201).send(newPost);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
   }
-  const username = jwt.decode(req.headers.authorization.split(" ")[1]).username;
-  const user = await User.findOne({ username });
-  if (!user) {
-    res.status(404).send("User not found");
-    return;
-  }
-  const newPost = new Post({
-    caption: req.body.caption,
-    image: req.body.image,
-    createdBy: user._id,
-    likes: [],
-    comments: [],
-  });
-  await newPost.save();
-  res.send("Post added successfully");
 };
 
 exports.editPost = async (req, res) => {
@@ -291,7 +300,6 @@ exports.editPost = async (req, res) => {
   }
   post.caption = req.body.caption;
   post.image = req.body.image;
-
   await post.save();
   res.send("Post updated successfully");
 };

@@ -1,14 +1,22 @@
 import { Sidebar } from "../sidebar/Sidebar";
 import { useState } from "react";
-import img20 from "../../assets/images/20.jpeg";
 import api from "../../../axiosConfig";
+import placeholderImage from "./../../assets/images/postplaceholder.jpeg";
+import { Link, useNavigate } from "react-router-dom";
 
 export function AddPost() {
+  const [input, setInput] = useState({
+    caption: "",
+    image: placeholderImage,
+  });
+  const [selectedImage, setSelectedImage] = useState(null);
+
   function uploadImg() {
     const image = document.getElementById("postImage");
     image.click();
   }
 
+  const Navigate = useNavigate();
   function openModal(e) {
     e.preventDefault();
     const modal = document.getElementById("cancelModal");
@@ -17,20 +25,23 @@ export function AddPost() {
 
   function cancelEdit() {
     document.getElementById("cancelModal").classList.add("hidden");
-    window.location.href = "your-redirect-url.html"; // Replace with the URL you want to redirect to
+    setInput({
+      caption: "",
+      image: placeholderImage,
+    });
+    setSelectedImage(null);
   }
 
   function cancelCancellation() {
     document.getElementById("cancelModal").classList.add("hidden");
   }
 
-  const [input, setInput] = useState({ caption: "", image: img20 });
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData();
     formData.append("image", input.image);
     formData.append("caption", input.caption);
+    console.log(formData);
 
     try {
       const res = await api.post("/addpost", formData, {
@@ -38,19 +49,26 @@ export function AddPost() {
           "content-type": "multipart/form-data",
         },
       });
-      console.log(res);
-      console.log(res.data);
+      setInput({ caption: "", image: null, imagePreview: null });
+      Navigate("/posts");
     } catch (err) {
       console.error(err);
     }
   };
 
   const handleImageChange = (e) => {
-    function changeInput() {
-      setInput((input) => ({ ...input, image: e.target.files[0] }));
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setInput({
+          ...input,
+          image: file,
+        });
+        setSelectedImage(reader.result);
+      };
+      reader.readAsDataURL(file);
     }
-    changeInput();
-    console.log(input);
   };
 
   return (
@@ -76,12 +94,12 @@ export function AddPost() {
             <div className="mb-4 flex flex-col items-center">
               <label
                 htmlFor="postImage"
-                className="cursor-pointer relative w-36 h-36"
+                className="cursor-pointer relative w-96 h-64"
               >
                 <img
-                  src={input.image}
-                  alt="Current Profile Picture"
-                  className="w-full h-full rounded-full"
+                  src={selectedImage || input.image}
+                  alt="Current Post Picture"
+                  className="w-full h-full rounded-sm"
                 />
                 <button onClick={uploadImg}>
                   <i
@@ -89,7 +107,6 @@ export function AddPost() {
                     id="editIcon"
                   ></i>
                 </button>
-
                 <input
                   type="file"
                   id="postImage"
@@ -109,6 +126,7 @@ export function AddPost() {
               <input
                 id="caption"
                 name="caption"
+                value={input.caption}
                 onChange={(e) => {
                   setInput({ ...input, caption: e.target.value });
                 }}
@@ -155,12 +173,13 @@ export function AddPost() {
               >
                 No
               </button>
-              <button
+              <Link
+                to="/posts"
                 onClick={cancelEdit}
                 className="mt-2 px-4 py-2 bg-red-500 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-300"
               >
                 Yes
-              </button>
+              </Link>
             </div>
           </div>
         </div>

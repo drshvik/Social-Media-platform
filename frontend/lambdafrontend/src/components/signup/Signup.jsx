@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 
 export function Signup() {
   const [input, setInput] = useState({
@@ -12,10 +13,12 @@ export function Signup() {
   const handleChange = (e) => {
     setInput({ ...input, [e.target.name]: e.target.value });
   };
+  const Navigate = useNavigate();
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const url = "signup";
+    const url = "http://localhost:3000/signup";
     const response = await axios.post(url, input);
+    Navigate("/login");
   };
   return (
     <div className="flex items-center justify-center h-180">
