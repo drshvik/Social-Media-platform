@@ -1,16 +1,16 @@
-export function Followers({ users }) {
+export function Followers({ users, removeFollower }) {
   return (
     <div id="followers" className="hidden mt-8">
       <ul className="space-y-4">
         {users.map((user, index) => {
-          return <Follower key={index} user={user} />;
+          return <Follower key={index} user={user} removeFollower={removeFollower} />;
         })}
       </ul>
     </div>
   );
 }
 
-const Follower = ({ user }) => {
+const Follower = ({ user, removeFollower }) => {
   return (
     <li className="flex items-center justify-between bg-white p-4 rounded-lg shadow">
       <div className="flex items-center">
@@ -24,7 +24,7 @@ const Follower = ({ user }) => {
           <p className="text-gray-500">@{user.username}</p>
         </div>
       </div>
-      <button className="bg-red-500 text-white px-4 py-2 rounded-full hover:bg-red-600">
+      <button onClick={removeFollower} className="bg-red-500 text-white px-4 py-2 rounded-full hover:bg-red-600">
         Remove Follower
       </button>
     </li>

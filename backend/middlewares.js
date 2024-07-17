@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const models = require("./models");
+const multer = require("multer");
 const User = models.User;
 const key = "lambda";
 
@@ -24,3 +25,24 @@ exports.loginMiddleWare = async (req, res, next) => {
     return;
   }
 };
+
+const postImageStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "uploads/postImages");
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + "-" + file.originalname);
+  },
+});
+exports.uploadPostImage = multer({ storage: postImageStorage,limits:{fieldSize: 25 * 1024 * 1024} });
+
+
+const profileImageStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "uploads/profileImages");
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + "-" + file.originalname);
+  },
+});
+exports.uploadProfileImage = multer({ storage: profileImageStorage,limits:{fieldSize: 25 * 1024 * 1024} });

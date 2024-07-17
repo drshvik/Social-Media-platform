@@ -2,13 +2,18 @@ import { Sidebar } from "../sidebar/Sidebar";
 import { useEffect, useState } from "react";
 import api from "../../../axiosConfig";
 import placeholderImage from "./../../assets/images/userplaceholder.jpeg";
+import {Loading} from "../Loading.jsx";
+import {useNavigate} from "react-router-dom";
 
 export function ProfileForm() {
   const [selectedImage, setSelectedImage] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
   const [input, setInput] = useState({
     username: "",
     name: "",
     image: { placeholderImage },
+    prevImage: null,
   });
 
   useEffect(() => {
@@ -16,10 +21,12 @@ export function ProfileForm() {
       const url = "/myprofile";
       try {
         const res = await api.get(url);
-        const user = res.data;
+        const user = res.data.user;
+        console.log(user);
         setInput({
-          ...user,
+          ...user, prevImage : res.data.prevImage
         });
+        setLoading(false);
       } catch (e) {
         console.log(e);
       }
@@ -27,7 +34,7 @@ export function ProfileForm() {
     getCurrentUser();
   }, []);
   function uploadImg() {
-    const image = document.getElementById("profileImage");
+    const image = document.getElementById("image");
     image.click();
   }
 
@@ -48,18 +55,18 @@ export function ProfileForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(input);
     const formData = new FormData();
     formData.append("username", input.username);
     formData.append("name", input.name);
     formData.append("image", input.image);
-
+    formData.append("prevImage", input.prevImage);
     try {
       const res = await api.put("/editprofile", formData, {
         headers: {
-          "Content-Type": "multipart/form-data",
+          "content-type": "multipart/form-data",
         },
       });
+      navigate('/myprofile')
     } catch (err) {
       console.error(err);
     }
@@ -80,17 +87,14 @@ export function ProfileForm() {
     }
   };
 
-  const handleChange = (e) => {
-    setInput({
-      ...input,
-      [e.target.name]: e.target.value,
-    });
-  };
+  if(loading){
+    return <Loading />
+  }
 
   return (
-    <div>
+    <div className="">
       <Sidebar />
-      <div className="flex-1 ml-80 mr-96 p-6 min-h-screen">
+      <div className="flex-1 ml-96  mr-96 p-6 min-h-screen ">
         <div className="container mx-auto py-10">
           <div className="flex justify-start mb-4">
             <button
@@ -102,11 +106,11 @@ export function ProfileForm() {
               Back
             </button>
           </div>
-          <h2 className="text-3xl font-bold mb-6">Edit Profile</h2>
-          <form onSubmit={handleSubmit} encType="multipart/form-data">
+          <h2 className="text-3xl font-normal text-gray-800 mb-6">Edit Profile</h2>
+          <form onSubmit={handleSubmit}  encType="multipart/form-data">
             <div className="mb-4 flex flex-col items-center">
               <label
-                htmlFor="profileImage"
+                htmlFor="image"
                 className="cursor-pointer relative w-36 h-36"
               >
                 <img
@@ -122,8 +126,8 @@ export function ProfileForm() {
                 </button>
                 <input
                   type="file"
-                  id="profileImage"
-                  name="profileImage"
+                  id="image"
+                  name="image"
                   className="hidden"
                   onChange={handleImageChange}
                 />
@@ -132,7 +136,7 @@ export function ProfileForm() {
             <div className="mb-4">
               <label
                 htmlFor="username"
-                className="block text-gray-700 font-bold mb-2"
+                className="block text-gray-600 font-normal mb-2"
               >
                 Username
               </label>
@@ -141,7 +145,7 @@ export function ProfileForm() {
                 id="username"
                 name="username"
                 value={input.username}
-                onChange={handleChange}
+                onChange={(e) => setInput({...input, username: e.target.value})}
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 placeholder="Username"
               />
@@ -149,7 +153,7 @@ export function ProfileForm() {
             <div className="mb-4">
               <label
                 htmlFor="name"
-                className="block text-gray-700 font-bold mb-2"
+                className="block text-gray-600 font-normal mb-2"
               >
                 Name
               </label>
@@ -158,33 +162,33 @@ export function ProfileForm() {
                 id="name"
                 name="name"
                 value={input.name}
-                onChange={handleChange}
+                onChange={(e) => setInput({...input, name: e.target.value})}
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 placeholder="Name"
               />
             </div>
             <div className="flex items-center justify-between">
               <button
-                type="submit"
-                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-              >
-                Save Changes
-              </button>
-              <button
-                type="button"
-                id="cancelButton"
-                onClick={openModal}
-                className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                  type="button"
+                  id="cancelButton"
+                  onClick={openModal}
+                  className="bg-gray-400 hover:bg-gray-500 text-white font-normal py-2 px-4 rounded focus:outline-none focus:shadow-outline"
               >
                 Cancel
+              </button>
+              <button
+                  type="submit"
+                  className="bg-emerald-500 hover:bg-emerald-600 text-white font-normal py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+              >
+                Save Changes
               </button>
             </div>
           </form>
         </div>
       </div>
       <div
-        id="cancelModal"
-        className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden"
+          id="cancelModal"
+          className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden"
       >
         <div className="relative top-1/4 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
           <div className="mt-3 text-center">
@@ -199,13 +203,13 @@ export function ProfileForm() {
             <div className="items-center px-4 py-3">
               <button
                 onClick={cancelCancellation}
-                className="px-4 py-2 bg-gray-500 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-300"
+                className="px-4 py-2 bg-gray-400 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-300"
               >
                 No
               </button>
               <button
                 onClick={cancelEdit}
-                className="mt-2 px-4 py-2 bg-red-500 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-300"
+                className="mt-2 px-4 py-2 bg-red-400 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-red-300"
               >
                 Yes
               </button>

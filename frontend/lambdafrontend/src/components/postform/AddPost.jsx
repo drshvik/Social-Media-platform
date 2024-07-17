@@ -41,7 +41,6 @@ export function AddPost() {
     const formData = new FormData();
     formData.append("image", input.image);
     formData.append("caption", input.caption);
-    console.log(formData);
 
     try {
       const res = await api.post("/addpost", formData, {
@@ -49,6 +48,7 @@ export function AddPost() {
           "content-type": "multipart/form-data",
         },
       });
+      console.log(res);
       setInput({ caption: "", image: null, imagePreview: null });
       Navigate("/posts");
     } catch (err) {
@@ -80,18 +80,18 @@ export function AddPost() {
             <button
               type="button"
               onClick={openModal}
-              className="underline text-red-500 hover:text-red-600 focus:outline-none focus:shadow-outline"
+              className="underline text-red-400 hover:text-red-600 focus:outline-none focus:shadow-outline"
             >
               Back
             </button>
           </div>
-          <h2 className="text-3xl font-bold mb-6">Add New Post</h2>
+          <h2 className="text-3xl font-normal mb-10">Add New Post</h2>
           <form
             onSubmit={handleSubmit}
             method="POST"
             encType="multipart/form-data"
           >
-            <div className="mb-4 flex flex-col items-center">
+            <div className="mb-10 flex flex-col items-center">
               <label
                 htmlFor="postImage"
                 className="cursor-pointer relative w-96 h-64"
@@ -119,7 +119,7 @@ export function AddPost() {
             <div className="mb-4">
               <label
                 htmlFor="postContent"
-                className="block text-gray-700 font-bold mb-2"
+                className="block text-gray-700 font-normal mb-6"
               >
                 Caption
               </label>
@@ -131,20 +131,20 @@ export function AddPost() {
                   setInput({ ...input, caption: e.target.value });
                 }}
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                placeholder="Post content"
+                placeholder="Post Caption"
               />
             </div>
-            <div className="flex items-center justify-between">
+            <div className="flex items-center mt-10 justify-between">
               <button
                 type="button"
                 onClick={openModal}
-                className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                className="bg-red-400 hover:bg-red-500 text-white font-normal py-2 px-4 rounded focus:outline-none focus:shadow-outline"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                className="bg-blue-400 hover:bg-blue-500 text-white font-normal py-2 px-4 rounded focus:outline-none focus:shadow-outline"
               >
                 Post
               </button>

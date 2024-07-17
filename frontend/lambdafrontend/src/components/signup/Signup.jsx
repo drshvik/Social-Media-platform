@@ -17,18 +17,24 @@ export function Signup() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const url = "http://localhost:3000/signup";
-    const response = await axios.post(url, input);
-    Navigate("/login");
+    try{
+      const response = await axios.post(url, input);
+      console.log(response.data);
+      Navigate("/login");
+    } catch(e) {
+      console.log(e);
+    }
+
   };
   return (
-    <div className="flex items-center justify-center h-180">
+    <div className="flex items-center justify-center mt-12 h-180">
       <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-md">
-        <h2 className="text-3xl font-bold mb-6 text-center">Signup</h2>
+        <h2 className="text-3xl text-gray-800 font-normal mb-10 text-center">Signup</h2>
         <form onSubmit={handleSubmit} method="POST">
           <div className="mb-4">
             <label
               htmlFor="name"
-              className="block text-gray-700 font-bold mb-2"
+              className="block text-gray-700 font-normal mb-2"
             >
               Name
             </label>
@@ -45,7 +51,7 @@ export function Signup() {
           <div className="mb-4">
             <label
               htmlFor="username"
-              className="block text-gray-700 font-bold mb-2"
+              className="block text-gray-700 font-normal mb-2"
             >
               Username
             </label>
@@ -62,7 +68,7 @@ export function Signup() {
           <div className="mb-4">
             <label
               htmlFor="email"
-              className="block text-gray-700 font-bold mb-2"
+              className="block text-gray-700 font-normal mb-2"
             >
               Email
             </label>
@@ -79,7 +85,7 @@ export function Signup() {
           <div className="mb-4">
             <label
               htmlFor="password"
-              className="block text-gray-700 font-bold mb-2"
+              className="block text-gray-700 font-normal mb-2"
             >
               Password
             </label>
@@ -96,7 +102,7 @@ export function Signup() {
           <div className="mb-4">
             <label
               htmlFor="confirmPassword"
-              className="block text-gray-700 font-bold mb-2"
+              className="block text-gray-700 font-normal mb-2"
             >
               Confirm Password
             </label>
@@ -110,10 +116,10 @@ export function Signup() {
               placeholder="Confirm Password"
             />
           </div>
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-center mt-10">
             <button
               type="submit"
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+              className="bg-blue-500 hover:bg-blue-700 text-white font-normal py-2 px-4 w-40 rounded focus:outline-none focus:shadow-outline"
             >
               Signup
             </button>
@@ -121,7 +127,7 @@ export function Signup() {
           <div className="mt-4 text-center">
             <Link
               to="/login"
-              className="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800"
+              className="inline-block align-baseline font-normal text-sm text-blue-500 hover:text-blue-800"
             >
               Already have an account? Login
             </Link>

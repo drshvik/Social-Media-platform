@@ -1,5 +1,14 @@
 import { removeToken } from "../../../tokenUtils";
-import { useNavigate } from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import {
+  faArrowRightFromBracket,
+  faCompass,
+  faHouse,
+  faMagnifyingGlass,
+  faUser
+} from "@fortawesome/free-solid-svg-icons";
+
 
 export function Navlinks() {
   const navigate = useNavigate();
@@ -9,35 +18,35 @@ export function Navlinks() {
   };
   return (
     <div>
-      <nav className="flex justify-between flex-col">
-        <ul className="space-y-4">
+      <nav className="flex justify-between h-screen flex-col mt-6">
+        <ul className="space-y-6">
           <li>
-            <a href="#" className="text-gray-700 hover:text-blue-500">
-              Home
+            <Link to="/posts" className="text-slate-500 hover:text-slate-600">
+              <FontAwesomeIcon icon={faHouse} />&nbsp;&nbsp;&nbsp; Home
+            </Link>
+          </li>
+          <li>
+            <a href="#" className="text-slate-500 hover:text-slate-600">
+              <FontAwesomeIcon icon={faMagnifyingGlass} /> &nbsp;&nbsp;&nbsp;Search
             </a>
           </li>
           <li>
-            <a href="#" className="text-gray-700 hover:text-blue-500">
-              Search
+            <a href="#" className="text-slate-500 hover:text-slate-600">
+              <FontAwesomeIcon icon={faCompass} /> &nbsp;&nbsp;&nbsp;Explore
             </a>
           </li>
           <li>
-            <a href="#" className="text-gray-700 hover:text-blue-500">
-              Explore
-            </a>
-          </li>
-          <li>
-            <a href="#" className="text-gray-700 hover:text-blue-500">
-              My Profile
-            </a>
+            <Link to="/myprofile" className="text-slate-500 hover:text-slate-600">
+              <FontAwesomeIcon icon={faUser} /> &nbsp;&nbsp;&nbsp; Profile
+            </Link>
           </li>
         </ul>
         <div>
           <button
             onClick={logout}
-            className="text-gray-700 hover:text-blue-500"
+            className="text-slate-500 mb-44 hover:text-slate-600"
           >
-            Logout
+            <FontAwesomeIcon icon={faArrowRightFromBracket} />&nbsp;&nbsp;&nbsp; Logout
           </button>
         </div>
       </nav>

@@ -19,9 +19,7 @@ export function Login() {
       const response = await axios.post(url, input);
 
       if (response.data.success) {
-        const str = response.data["token"];
-        console.log("Backedn sent the token as " + str);
-        setToken(str);
+        setToken(response.data["token"]);
         navigate("/posts");
       } else {
         setError(true);
@@ -34,7 +32,7 @@ export function Login() {
   return (
     <div className=" flex items-center justify-center h-screen">
       <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-md">
-        <h2 className="text-3xl font-bold mb-6 text-center">Login</h2>
+        <h2 className="text-3xl font-normal mb-10 text-center">Login</h2>
         {error ? (
           <p className="text-red-500">
             There was an error Logging In. Please Try Again
@@ -46,7 +44,7 @@ export function Login() {
           <div className="mb-4">
             <label
               htmlFor="username"
-              className="block text-gray-700 font-bold mb-2"
+              className="block text-gray-700 font-normal mb-2"
             >
               Username
             </label>
@@ -63,7 +61,7 @@ export function Login() {
           <div className="mb-4">
             <label
               htmlFor="password"
-              className="block text-gray-700 font-bold mb-2"
+              className="block text-gray-700 font-normal mb-2"
             >
               Password
             </label>
@@ -77,24 +75,25 @@ export function Login() {
               placeholder="Password"
             />
           </div>
-          <div className="flex items-center justify-between">
-            <button
-              type="submit"
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-            >
-              Login
-            </button>
+          <div className="flex items-center mt-12 justify-between">
             <a
-              href="#"
-              className="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800"
+                href="#"
+                className="inline-block align-baseline font-normal text-sm text-blue-500 hover:text-blue-800"
             >
               Forgot Password?
             </a>
+            <button
+                type="submit"
+                className="bg-blue-500 hover:bg-blue-700 text-white w-40 font-normal py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            >
+              Login
+            </button>
+
           </div>
-          <div className="mt-4 text-center">
+          <div className="mt-6 mb-4 text-center">
             <Link
-              to="/signup"
-              className="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800"
+                to="/signup"
+                className="inline-block align-baseline font-normal text-sm text-blue-500 hover:text-blue-800"
             >
               Create an account
             </Link>

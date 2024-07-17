@@ -96,40 +96,59 @@ exports.userprofile = async (req, res) => {
 };
 
 exports.myprofile = async (req, res) => {
-  const username = jwt.decode(req.headers.authorization.split(" ")[1]).username;
-  const user = await User.findOne({ username }).populate(
-    "followers following",
-    "name"
-  );
-  if (!user) {
-    res.status(404).send("User not found");
-    return;
-  }
-  const imagePath = path.resolve(user.image);
-  console.log(imagePath);
-
-  fs.readFile(imagePath, (err, data) => {
-    if (err) {
-      return res.status(500).send("Error reading image");
+  try {
+    const username = jwt.decode(
+      req.headers.authorization.split(" ")[1]
+    ).username;
+    let user = await User.findOne({ username }).populate(
+      "followers following",
+      "name"
+    );
+    if (!user) {
+      return res.status(404).send("User not found");
+    }
+    const imagePath = path.resolve(user.image);
+    if (!fs.existsSync(imagePath)) {
+      console.warn(`Image not found at path: ${imagePath}`);
+      return res.json({ user, prevImage: null });
     }
 
-    const base64Image = Buffer.from(data).toString("base64");
-    const dataURL = `data:image/jpeg;base64,${base64Image}`;
-    user.image = dataURL;
-    res.json(user);
-  });
+    fs.readFile(imagePath, (err, data) => {
+      if (err) {
+        console.error("Error reading image:", err);
+        return res.status(500).send("Error reading image");
+      }
+
+      const base64Image = Buffer.from(data).toString("base64");
+      const dataURL = `data:image/jpeg;base64,${base64Image}`;
+      user.image = dataURL;
+
+      res.json({ user, prevImage: imagePath });
+    });
+  } catch (err) {
+    console.error("Error in myprofile:", err);
+    res.status(500).send("Internal Server Error");
+  }
 };
 
 exports.editprofile = async (req, res) => {
+  const imagePath = req.file ? req.file.path : "./uploads/userplaceholder.jpeg";
+  const prevImage = req.body.prevImage;
+  let del = false;
+  if (prevImage !== imagePath) {
+    del = true;
+  }
+  delete req.body.prevImage;
+  const updatedUser = { ...req.body, image: imagePath };
   const username = jwt.decode(req.headers.authorization.split(" ")[1]).username;
-  console.log(req.body);
-  const updates = req.body;
-  const user = await User.findOneAndUpdate({ username }, updates, {
-    new: true,
+  const user = await User.findOneAndUpdate({ username }, updatedUser, {
+    new: false,
   });
-  if (!user) {
-    res.status(404).send("User not found");
-    return;
+  if (del) {
+    fs.unlinkSync(prevImage, (e) => {
+      if (e) console.log(e);
+      console.log("Updated Succesfully");
+    });
   }
   res.json(user);
 };
@@ -236,7 +255,6 @@ exports.comment = async (req, res) => {
 };
 
 exports.addPost = async (req, res) => {
-  console.log(req);
   try {
     const validPost = zod.object({
       caption: zod.string(),

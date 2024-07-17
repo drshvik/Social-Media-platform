@@ -38,6 +38,10 @@ const router = createBrowserRouter([
     path: "/editprofile",
     element: <ProtectedRoute component={ProfileForm} />,
   },
+  {
+    path:"/myprofile",
+    element: <ProtectedRoute component={Profile} />,
+  }
 ]);
 
 export default function App() {
