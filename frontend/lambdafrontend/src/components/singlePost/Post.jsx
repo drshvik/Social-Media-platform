@@ -1,6 +1,5 @@
-import userimg from "./../../assets/images/1.jpeg";
-import postimg from "./../../assets/images/6.jpeg";
-// import { Link } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faHeart } from "@fortawesome/free-regular-svg-icons";
 
 export function Post({ post }) {
   return (
@@ -9,8 +8,7 @@ export function Post({ post }) {
         <div className="flex items-center mb-4">
           <img
             className="w-12 h-12 rounded-full"
-            // src={post.createdBy.image}
-            src={userimg}
+            src={post.createdBy.image}
             alt="User Image"
           />
           <div className="ml-4">
@@ -21,8 +19,7 @@ export function Post({ post }) {
         <p className="text-gray-700 mb-4">{post.caption}</p>
 
         <img
-          // src={post.image}
-          src={postimg}
+          src={post.image}
           alt="Post Image"
           className="w-full h-auto object-cover rounded-lg"
         />
@@ -30,7 +27,7 @@ export function Post({ post }) {
         <div className="flex justify-between items-center mt-4">
           <div className="flex space-x-4">
             <button className="text-red-500 hover:text-red-700">
-              <i className="fas fa-heart"></i> {post.likes.length}
+              <FontAwesomeIcon icon={faHeart} /> {post.likes.length}
             </button>
             <button className="text-gray-500 hover:text-gray-700">
               <i className="fas fa-comment"></i> {post.comments.length}
@@ -44,10 +41,6 @@ export function Post({ post }) {
           </button>
         </div>
       </div>
-      <script
-        src="https://kit.fontawesome.com/911b160e40.js"
-        crossOrigin="anonymous"
-      ></script>
     </div>
   );
 }

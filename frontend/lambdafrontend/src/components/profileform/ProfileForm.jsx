@@ -2,8 +2,8 @@ import { Sidebar } from "../sidebar/Sidebar";
 import { useEffect, useState } from "react";
 import api from "../../../axiosConfig";
 import placeholderImage from "./../../assets/images/userplaceholder.jpeg";
-import {Loading} from "../Loading.jsx";
-import {useNavigate} from "react-router-dom";
+import { Loading } from "../Loading.jsx";
+import { useNavigate } from "react-router-dom";
 
 export function ProfileForm() {
   const [selectedImage, setSelectedImage] = useState(null);
@@ -22,9 +22,9 @@ export function ProfileForm() {
       try {
         const res = await api.get(url);
         const user = res.data.user;
-        console.log(user);
         setInput({
-          ...user, prevImage : res.data.prevImage
+          ...user,
+          prevImage: res.data.prevImage,
         });
         setLoading(false);
       } catch (e) {
@@ -66,7 +66,7 @@ export function ProfileForm() {
           "content-type": "multipart/form-data",
         },
       });
-      navigate('/myprofile')
+      navigate("/myprofile");
     } catch (err) {
       console.error(err);
     }
@@ -87,8 +87,8 @@ export function ProfileForm() {
     }
   };
 
-  if(loading){
-    return <Loading />
+  if (loading) {
+    return <Loading />;
   }
 
   return (
@@ -106,8 +106,10 @@ export function ProfileForm() {
               Back
             </button>
           </div>
-          <h2 className="text-3xl font-normal text-gray-800 mb-6">Edit Profile</h2>
-          <form onSubmit={handleSubmit}  encType="multipart/form-data">
+          <h2 className="text-3xl font-normal text-gray-800 mb-6">
+            Edit Profile
+          </h2>
+          <form onSubmit={handleSubmit} encType="multipart/form-data">
             <div className="mb-4 flex flex-col items-center">
               <label
                 htmlFor="image"
@@ -145,7 +147,9 @@ export function ProfileForm() {
                 id="username"
                 name="username"
                 value={input.username}
-                onChange={(e) => setInput({...input, username: e.target.value})}
+                onChange={(e) =>
+                  setInput({ ...input, username: e.target.value })
+                }
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 placeholder="Username"
               />
@@ -162,23 +166,23 @@ export function ProfileForm() {
                 id="name"
                 name="name"
                 value={input.name}
-                onChange={(e) => setInput({...input, name: e.target.value})}
+                onChange={(e) => setInput({ ...input, name: e.target.value })}
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 placeholder="Name"
               />
             </div>
             <div className="flex items-center justify-between">
               <button
-                  type="button"
-                  id="cancelButton"
-                  onClick={openModal}
-                  className="bg-gray-400 hover:bg-gray-500 text-white font-normal py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                type="button"
+                id="cancelButton"
+                onClick={openModal}
+                className="bg-gray-400 hover:bg-gray-500 text-white font-normal py-2 px-4 rounded focus:outline-none focus:shadow-outline"
               >
                 Cancel
               </button>
               <button
-                  type="submit"
-                  className="bg-emerald-500 hover:bg-emerald-600 text-white font-normal py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                type="submit"
+                className="bg-emerald-500 hover:bg-emerald-600 text-white font-normal py-2 px-4 rounded focus:outline-none focus:shadow-outline"
               >
                 Save Changes
               </button>
@@ -187,8 +191,8 @@ export function ProfileForm() {
         </div>
       </div>
       <div
-          id="cancelModal"
-          className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden"
+        id="cancelModal"
+        className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden"
       >
         <div className="relative top-1/4 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
           <div className="mt-3 text-center">

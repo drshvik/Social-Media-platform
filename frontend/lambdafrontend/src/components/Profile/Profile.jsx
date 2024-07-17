@@ -20,9 +20,9 @@ export function Profile() {
       try {
         const url = "/myprofile";
         const response = await api.get(url);
-        console.log("Response data:", response.data);
         const loggedInUser = await response.data.user;
         setUser(loggedInUser);
+
         const userPosts = await Promise.all(
           loggedInUser.posts.map((post) => {
             async function fetchPost(id) {

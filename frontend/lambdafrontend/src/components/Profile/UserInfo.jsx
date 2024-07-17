@@ -1,11 +1,22 @@
+import { useEffect } from "react";
+import { Link } from "react-router-dom";
+import api from "../../../axiosConfig";
+
 export function UserInfo({ user }) {
+  async function getUserID() {
+    const url = "/myprofile";
+    const res = await api.get(url);
+    const userid = res.data._id;
+    return userid;
+  }
+
   return (
     <div>
       <div className="flex items-center justify-between">
         <div className="flex items-center">
           <img
             className="w-32 h-32 rounded-2xl"
-            src="/images/1.jpeg"
+            src={user.image}
             alt="Profile Picture"
           />
           <div className="ml-6">
@@ -13,9 +24,22 @@ export function UserInfo({ user }) {
             <p className="text-gray-500">{user.name}</p>
           </div>
         </div>
-        <button className="bg-green-500 text-white px-4 py-2 rounded-full hover:bg-green-600">
-          Follow
-        </button>
+        {window.location.pathname === "/myprofile" ? (
+          <Link
+            to="/editprofile"
+            className="bg-pink-500 text-white px-4 py-2 rounded-full hover:bg-pink-600"
+          >
+            Edit Profile
+          </Link>
+        ) : user.followers.includes(getUserID()) ? (
+          <button className="bg-pink-500 text-white px-4 py-2 rounded-full hover:bg-pink-600">
+            UnFollow
+          </button>
+        ) : (
+          <button className="bg-pink-500 text-white px-4 py-2 rounded-full hover:bg-pink-600">
+            Follow
+          </button>
+        )}
       </div>
       <div className="flex justify-evenly mt-8">
         <div className="text-center">

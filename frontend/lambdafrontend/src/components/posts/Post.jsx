@@ -1,5 +1,3 @@
-import userimg from "./../../assets/images/1.jpeg";
-import postimg from "./../../assets/images/6.jpeg";
 import { Link } from "react-router-dom";
 
 export function Post({ post }) {
@@ -9,8 +7,7 @@ export function Post({ post }) {
       <div className="flex items-center mb-4">
         <img
           className="w-12 h-12 rounded-full"
-          // src={post.createdBy.image}
-          src={userimg}
+          src={post.createdBy.image}
           alt="User Image"
         />
         <div className="ml-4">
@@ -21,8 +18,7 @@ export function Post({ post }) {
       <p className="text-gray-700 mb-4">{post.caption}</p>
       <Link to={posturl}>
         <img
-          // src={post.image}
-          src={postimg}
+          src={post.image}
           alt="Post Image"
           className="w-full h-auto object-cover rounded-lg"
         />

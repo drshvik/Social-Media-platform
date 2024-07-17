@@ -13,6 +13,17 @@ const FileReader = require("filereader");
 const fs = require("fs");
 const path = require("path");
 
+async function convertImage(imagePath) {
+  try {
+    const data = await fs.promises.readFile(imagePath);
+    const base64Image = Buffer.from(data).toString("base64");
+    const dataURL = `data:image/jpeg;base64,${base64Image}`;
+    return dataURL;
+  } catch (e) {
+    console.log(e);
+  }
+}
+
 exports.signup = async (req, res) => {
   const validUser = zod.object({
     name: zod.string(),
@@ -68,7 +79,16 @@ exports.login = async (req, res) => {
 
 exports.posts = async (req, res) => {
   const allPosts = await Post.find();
-  res.json(allPosts);
+  const posts = await Promise.all(
+    allPosts.map(async (post, index) => {
+      const user = await User.findOne({ _id: post.createdBy });
+      post.createdBy = user;
+      const imagePath = path.resolve(post.image);
+      post.image = await convertImage(imagePath);
+      return post;
+    })
+  );
+  res.json(posts);
 };
 
 exports.viewpost = async (req, res) => {
@@ -78,6 +98,8 @@ exports.viewpost = async (req, res) => {
     res.status(404).send("Post not found");
     return;
   }
+  const imagePath = path.resolve(post.image);
+  post.image = await convertImage(imagePath);
   res.json(post);
 };
 
@@ -108,23 +130,9 @@ exports.myprofile = async (req, res) => {
       return res.status(404).send("User not found");
     }
     const imagePath = path.resolve(user.image);
-    if (!fs.existsSync(imagePath)) {
-      console.warn(`Image not found at path: ${imagePath}`);
-      return res.json({ user, prevImage: null });
-    }
+    user.image = await convertImage(imagePath);
 
-    fs.readFile(imagePath, (err, data) => {
-      if (err) {
-        console.error("Error reading image:", err);
-        return res.status(500).send("Error reading image");
-      }
-
-      const base64Image = Buffer.from(data).toString("base64");
-      const dataURL = `data:image/jpeg;base64,${base64Image}`;
-      user.image = dataURL;
-
-      res.json({ user, prevImage: imagePath });
-    });
+    res.json({ user, prevImage: imagePath });
   } catch (err) {
     console.error("Error in myprofile:", err);
     res.status(500).send("Internal Server Error");
@@ -132,10 +140,14 @@ exports.myprofile = async (req, res) => {
 };
 
 exports.editprofile = async (req, res) => {
-  const imagePath = req.file ? req.file.path : "./uploads/userplaceholder.jpeg";
+  const placeholderImage = "/uploads/userplaceholder.jpeg";
   const prevImage = req.body.prevImage;
+  let imagePath = req.file ? req.file.path : prevImage || placeholderImage;
+  const parts = imagePath.split("uploads");
+  imagePath = `uploads${parts[1]}`;
   let del = false;
-  if (prevImage !== imagePath) {
+
+  if (!prevImage.includes(imagePath) && imagePath !== placeholderImage) {
     del = true;
   }
   delete req.body.prevImage;

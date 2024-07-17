@@ -14,16 +14,8 @@ export function Posts() {
       try {
         const response = await api.get(url);
         const postsData = response.data;
-
-        const updatedPosts = await Promise.all(
-          postsData.map(async (post) => {
-            const userResponse = await api.get(`${userurl}${post.createdBy}`);
-            post.createdBy = userResponse.data;
-            console.log(post);
-            return post;
-          })
-        );
-        setPosts(updatedPosts);
+        console.log(postsData);
+        setPosts(postsData);
       } catch (error) {
         console.error("Error fetching posts:", error);
       } finally {
