@@ -12,6 +12,7 @@ const { ObjectId } = require("mongodb");
 const FileReader = require("filereader");
 const fs = require("fs");
 const path = require("path");
+const { log } = require("console");
 
 async function convertImage(imagePath) {
   try {
@@ -82,9 +83,11 @@ exports.posts = async (req, res) => {
   const posts = await Promise.all(
     allPosts.map(async (post, index) => {
       const user = await User.findOne({ _id: post.createdBy });
-      post.createdBy = user;
       const imagePath = path.resolve(post.image);
       post.image = await convertImage(imagePath);
+      const imagePath1 = path.resolve(user.image);
+      user.image = await convertImage(imagePath1);
+      post.createdBy = user;
       return post;
     })
   );
@@ -93,14 +96,19 @@ exports.posts = async (req, res) => {
 
 exports.viewpost = async (req, res) => {
   const id = req.params.id;
-  const post = await Post.findById(id).populate("createdBy", "name");
+  const post = await Post.findById(id);
   if (!post) {
     res.status(404).send("Post not found");
     return;
   }
+  const userID = post.createdBy;
+  const user = await User.findOne({ _id: userID });
   const imagePath = path.resolve(post.image);
   post.image = await convertImage(imagePath);
-  res.json(post);
+  const imagePath1 = path.resolve(user.image);
+  user.image = await convertImage(imagePath1);
+  post.createdBy = user;
+  res.json({ post, prevImage: imagePath });
 };
 
 exports.userprofile = async (req, res) => {
@@ -114,6 +122,8 @@ exports.userprofile = async (req, res) => {
     res.status(404).send("User not found");
     return;
   }
+  const imagePath = path.resolve(user.image);
+  user.image = await convertImage(imagePath);
   res.json(user);
 };
 
@@ -122,10 +132,7 @@ exports.myprofile = async (req, res) => {
     const username = jwt.decode(
       req.headers.authorization.split(" ")[1]
     ).username;
-    let user = await User.findOne({ username }).populate(
-      "followers following",
-      "name"
-    );
+    let user = await User.findOne({ username });
     if (!user) {
       return res.status(404).send("User not found");
     }
@@ -167,22 +174,38 @@ exports.editprofile = async (req, res) => {
 
 exports.followers = async (req, res) => {
   const id = req.params.id;
-  const user = await User.findById(id).populate("followers", "name");
+  const user = await User.findById(id);
   if (!user) {
     res.status(404).send("User not found");
     return;
   }
-  res.json(user.followers);
+  const followers = await Promise.all(
+    user.followers.map(async (userID, index) => {
+      const user = await User.findOne({ _id: userID });
+      const imagePath = path.resolve(user.image);
+      user.image = await convertImage(imagePath);
+      return user;
+    })
+  );
+  res.json(followers);
 };
 
 exports.following = async (req, res) => {
   const id = req.params.id;
-  const user = await User.findById(id).populate("following", "name");
+  const user = await User.findById(id);
   if (!user) {
     res.status(404).send("User not found");
     return;
   }
-  res.json(user.following);
+  const following = await Promise.all(
+    user.following.map(async (userID, index) => {
+      const user = await User.findOne({ _id: userID });
+      const imagePath = path.resolve(user.image);
+      user.image = await convertImage(imagePath);
+      return user;
+    })
+  );
+  res.json(following);
 };
 
 exports.follow = async (req, res) => {
@@ -232,9 +255,37 @@ exports.like = async (req, res) => {
   }
   const like = await Like.findOne({ postId: id, likedBy: user._id });
   if (!like) {
-    await Like.create({ postId: id, likedBy: user._id, likes: 1 });
+    const like = await Like.create({ postId: id, likedBy: user._id, likes: 1 });
+    const updatedLikes = post.likes.push(like._id);
+    post.likes = updatedLikes;
+    const updatedPost = await Post.findOneAndUpdate({ _id: id }, post, {
+      new: false,
+    });
   }
   res.send("Liked successfully");
+};
+
+exports.unlike = async (req, res) => {
+  const id = req.params.id;
+  const username = jwt.decode(req.headers.authorization.split(" ")[1]).username;
+  const user = await User.findOne({ username });
+  const post = await Post.findById(id);
+  if (!user || !post) {
+    res.status(404).send("Post or User not found");
+    return;
+  }
+  const like = await Like.findOne({ postId: id, likedBy: user._id });
+  if (like) {
+    const updatedLikes = post.likes.filter((like, index) => {
+      return like !== like._id;
+    });
+    post.likes = updatedLikes;
+    const updatedPost = await Post.findOneAndUpdate({ _id: id }, post, {
+      new: false,
+    });
+    const deleted = await Like.deleteOne({ _id: like._id });
+  }
+  res.send("UnLiked successfully");
 };
 
 exports.comment = async (req, res) => {
@@ -276,7 +327,7 @@ exports.addPost = async (req, res) => {
       return res.status(400).send("Invalid Post Data");
     }
 
-    const imagePath = req.file ? req.file.path : "uploadspostplaceholder.jpeg";
+    const imagePath = req.file ? req.file.path : "uploads/postplaceholder.jpeg";
     const username = jwt.decode(
       req.headers.authorization.split(" ")[1]
     ).username;
@@ -303,33 +354,45 @@ exports.addPost = async (req, res) => {
 };
 
 exports.editPost = async (req, res) => {
-  const validPost = zod.object({
-    caption: zod.string(),
-    image: zod.string(),
-  });
-  const postValidation = validPost.safeParse(req.body);
-  if (!postValidation.success) {
-    res.send("Invalid Post Data");
-    return;
+  try {
+    const placeholderImage = "/uploads/postplaceholder.jpeg";
+    const prevImage = req.body.prevImage;
+    let imagePath = req.file ? req.file.path : prevImage || placeholderImage;
+    const parts = imagePath.split("uploads");
+    imagePath = `uploads${parts[1]}`;
+    let del = false;
+
+    if (!prevImage.includes(imagePath) && imagePath !== placeholderImage) {
+      del = true;
+    }
+    delete req.body.prevImage;
+    const updatedPost = { ...req.body, image: imagePath };
+    const username = jwt.decode(
+      req.headers.authorization.split(" ")[1]
+    ).username;
+    const user = await User.findOne({ username });
+    if (!user) {
+      res.status(404).send("User not found");
+      return;
+    }
+    const postId = req.params.id;
+    let post = await Post.findOneAndUpdate(
+      { _id: postId, createdBy: user._id },
+      updatedPost,
+      { new: false }
+    );
+    if (!post) {
+      res.status(404).send("Something went wrong");
+      return;
+    }
+    if (del) {
+      fs.unlinkSync(prevImage, (e) => {
+        if (e) console.log(e);
+        console.log("Updated Succesfully");
+      });
+    }
+    res.send("Post updated successfully");
+  } catch (e) {
+    console.log(e);
   }
-  const username = jwt.decode(req.headers.authorization.split(" ")[1]).username;
-  const user = await User.findOne({ username });
-  if (!user) {
-    res.status(404).send("User not found");
-    return;
-  }
-  const postId = req.params.id;
-  const post = await Post.findById(postId);
-  if (!post) {
-    res.status(404).send("Post not found");
-    return;
-  }
-  if (post.createdBy.toString() !== user._id.toString()) {
-    res.status(403).send("Unauthorized");
-    return;
-  }
-  post.caption = req.body.caption;
-  post.image = req.body.image;
-  await post.save();
-  res.send("Post updated successfully");
 };

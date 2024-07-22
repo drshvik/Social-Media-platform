@@ -1,5 +1,3 @@
-// tokenUtils.js
-
 const TOKEN_KEY = "token";
 
 // Function to get the token from local storage

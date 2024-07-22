@@ -34,8 +34,10 @@ const postImageStorage = multer.diskStorage({
     cb(null, Date.now() + "-" + file.originalname);
   },
 });
-exports.uploadPostImage = multer({ storage: postImageStorage,limits:{fieldSize: 25 * 1024 * 1024} });
-
+exports.uploadPostImage = multer({
+  storage: postImageStorage,
+  limits: { fieldSize: 25 * 1024 * 1024 },
+});
 
 const profileImageStorage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -45,4 +47,7 @@ const profileImageStorage = multer.diskStorage({
     cb(null, Date.now() + "-" + file.originalname);
   },
 });
-exports.uploadProfileImage = multer({ storage: profileImageStorage,limits:{fieldSize: 25 * 1024 * 1024} });
+exports.uploadProfileImage = multer({
+  storage: profileImageStorage,
+  limits: { fieldSize: 25 * 1024 * 1024 },
+});

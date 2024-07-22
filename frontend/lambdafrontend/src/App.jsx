@@ -4,7 +4,7 @@ import { Login } from "./components/login/Login";
 import { Signup } from "./components/signup/Signup";
 import { Profile } from "./components/Profile/Profile";
 import { SinglePost } from "./components/singlePost/SinglePost";
-import { AddPost } from "./components/postform/AddPost";
+import { PostForm } from "./components/postform/PostForm";
 import { ProfileForm } from "./components/profileform/ProfileForm";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -32,16 +32,20 @@ const router = createBrowserRouter([
   },
   {
     path: "/addpost",
-    element: <ProtectedRoute component={AddPost} />,
+    element: <ProtectedRoute component={PostForm} />,
   },
   {
     path: "/editprofile",
     element: <ProtectedRoute component={ProfileForm} />,
   },
   {
-    path:"/myprofile",
+    path: "/myprofile",
     element: <ProtectedRoute component={Profile} />,
-  }
+  },
+  {
+    path: "/editpost/:id",
+    element: <ProtectedRoute component={PostForm} />,
+  },
 ]);
 
 export default function App() {

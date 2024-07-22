@@ -1,6 +1,40 @@
 import { Link } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faBookmark,
+  faHeart as faHeartRegular,
+} from "@fortawesome/free-regular-svg-icons";
+import { faComment } from "@fortawesome/free-regular-svg-icons";
+import {
+  faShare,
+  faHeart as faHeartSolid,
+} from "@fortawesome/free-solid-svg-icons";
+import { useState } from "react";
+import api from "../../../axiosConfig";
 
-export function Post({ post }) {
+export function Post({ post, loggedInUser }) {
+  const [likes, setLikes] = useState(post.likes);
+  const [liked, setLiked] = useState(
+    likes.some((like) => like.likedBy === loggedInUser._id)
+  );
+
+  const handleLike = async () => {
+    try {
+      if (liked) {
+        const url = `/unlike/${post._id}`;
+        const res = await api.post(url);
+        setLiked(false);
+        setLikes(likes.filter((like) => like.likedBy !== loggedInUser._id));
+      } else {
+        const url = `/like/${post._id}`;
+        const res = await api.post(url);
+        setLiked(true);
+        setLikes([...likes, { likedBy: loggedInUser._id }]);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
   const posturl = `/post/${post._id}`;
   return (
     <div className="bg-white p-6 rounded-lg mb-6 w-full md:w-3/5">
@@ -25,18 +59,30 @@ export function Post({ post }) {
       </Link>
       <div className="flex justify-between items-center mt-4">
         <div className="flex space-x-4">
-          <button className="text-red-500 hover:text-red-700">
-            <i className="fas fa-heart"></i> {post.likes.length}
+          {liked ? (
+            <button
+              className="text-red-500 hover:text-red-700"
+              onClick={handleLike}
+            >
+              <FontAwesomeIcon icon={faHeartSolid} /> {likes.length}
+            </button>
+          ) : (
+            <button
+              className="text-red-500 hover:text-red-700"
+              onClick={handleLike}
+            >
+              <FontAwesomeIcon icon={faHeartRegular} /> {likes.length}
+            </button>
+          )}
+          <button className="text-gray-500 hover:text-gray-700">
+            <FontAwesomeIcon icon={faComment} /> {post.comments.length}
           </button>
           <button className="text-gray-500 hover:text-gray-700">
-            <i className="fas fa-comment"></i> {post.comments.length}
-          </button>
-          <button className="text-gray-500 hover:text-gray-700">
-            <i className="fas fa-share"></i>
+            <FontAwesomeIcon icon={faShare} />
           </button>
         </div>
         <button className="text-gray-500 hover:text-gray-700">
-          <i className="fas fa-bookmark"></i>
+          <FontAwesomeIcon icon={faBookmark} />
         </button>
       </div>
     </div>

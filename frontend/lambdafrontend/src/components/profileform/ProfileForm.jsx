@@ -46,7 +46,7 @@ export function ProfileForm() {
 
   function cancelEdit() {
     document.getElementById("cancelModal").classList.add("hidden");
-    window.location.href = "your-redirect-url.html"; // Replace with the URL you want to redirect to
+    window.location.href = "/myprofile";
   }
 
   function cancelCancellation() {

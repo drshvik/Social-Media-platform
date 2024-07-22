@@ -1,22 +1,62 @@
 import { Sidebar } from "../sidebar/Sidebar";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import api from "../../../axiosConfig";
 import placeholderImage from "./../../assets/images/postplaceholder.jpeg";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { useLocation } from "react-router-dom";
+import { Loading } from "../Loading";
 
-export function AddPost() {
+export function PostForm() {
   const [input, setInput] = useState({
     caption: "",
     image: placeholderImage,
+    prevImage: placeholderImage,
   });
   const [selectedImage, setSelectedImage] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+  const { id } = useParams();
+
+  useEffect(() => {
+    async function fetchData() {
+      if (id) {
+        const posturl = `/post/${id}`;
+        const res = await api.get(posturl);
+        const post = res.data.post;
+        setInput({
+          ...post,
+          prevImage: res.data.prevImage || placeholderImage,
+        });
+      }
+      setLoading(false);
+    }
+    fetchData();
+  }, []);
+  const location = useLocation();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const formData = new FormData();
+    formData.append("image", input.image);
+    formData.append("caption", input.caption);
+    formData.append("prevImage", input.prevImage);
+    try {
+      const res = await api.post(location.pathname, formData, {
+        headers: {
+          "content-type": "multipart/form-data",
+        },
+      });
+      navigate("/posts");
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   function uploadImg() {
-    const image = document.getElementById("postImage");
+    const image = document.getElementById("image");
     image.click();
   }
 
-  const Navigate = useNavigate();
   function openModal(e) {
     e.preventDefault();
     const modal = document.getElementById("cancelModal");
@@ -25,36 +65,12 @@ export function AddPost() {
 
   function cancelEdit() {
     document.getElementById("cancelModal").classList.add("hidden");
-    setInput({
-      caption: "",
-      image: placeholderImage,
-    });
-    setSelectedImage(null);
+    window.location.href = "/posts";
   }
 
   function cancelCancellation() {
     document.getElementById("cancelModal").classList.add("hidden");
   }
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const formData = new FormData();
-    formData.append("image", input.image);
-    formData.append("caption", input.caption);
-
-    try {
-      const res = await api.post("/addpost", formData, {
-        headers: {
-          "content-type": "multipart/form-data",
-        },
-      });
-      console.log(res);
-      setInput({ caption: "", image: null, imagePreview: null });
-      Navigate("/posts");
-    } catch (err) {
-      console.error(err);
-    }
-  };
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -70,6 +86,10 @@ export function AddPost() {
       reader.readAsDataURL(file);
     }
   };
+
+  if (loading) {
+    return <Loading />;
+  }
 
   return (
     <div className="flex w-full">
@@ -142,12 +162,22 @@ export function AddPost() {
               >
                 Cancel
               </button>
-              <button
-                type="submit"
-                className="bg-blue-400 hover:bg-blue-500 text-white font-normal py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-              >
-                Post
-              </button>
+
+              {window.location.path === "/addpost" ? (
+                <button
+                  type="submit"
+                  className="bg-blue-400 hover:bg-blue-500 text-white font-normal py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                >
+                  Post
+                </button>
+              ) : (
+                <button
+                  type="submit"
+                  className="bg-blue-400 hover:bg-blue-500 text-white font-normal py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                >
+                  Update
+                </button>
+              )}
             </div>
           </form>
         </div>
